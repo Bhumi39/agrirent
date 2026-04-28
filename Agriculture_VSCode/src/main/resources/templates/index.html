@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriRental - Premium Equipment</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2d6a4f;
+            --secondary-green: #40916c;
+            --light-green: #d8f3dc;
+            --dark-green: #1b4332;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fdf9;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--dark-green), var(--primary-green));
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1594914141274-b56743869272?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            margin-bottom: 3rem;
+            border-radius: 0 0 50px 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+        }
+
+        .search-container {
+            margin-top: -50px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .search-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(45, 106, 79, 0.25);
+            border-color: var(--primary-green);
+        }
+
+        .btn-green {
+            background-color: var(--primary-green);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 25px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-green:hover {
+            background-color: var(--dark-green);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(45, 106, 79, 0.3);
+        }
+
+        .equipment-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+            background: white;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .card-img-container {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .card-img-top {
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .equipment-card:hover .card-img-top {
+            transform: scale(1.1);
+        }
+
+        .badge-available {
+            background-color: var(--secondary-green);
+        }
+
+        .badge-rented {
+            background-color: #6c757d;
+        }
+
+        .price-tag {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .footer {
+            background-color: var(--dark-green);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">🚜 AGRIRENTAL</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#browse">Browse</a></li>
+                    <li class="nav-item" th:if="${session.userId != null}"><a class="nav-link" href="/bookings">My Bookings</a></li>
+                    <li class="nav-item" th:if="${session.userId != null}"><a class="nav-link" href="/logout">Logout</a></li>
+                    <li class="nav-item" th:if="${session.userId == null}"><a class="nav-link" href="/login">Login / Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Modernize Your Farming</h1>
+            <p class="hero-subtitle">Premium equipment on demand. Rent today, harvest success.</p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="container search-container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card search-card">
+                    <form th:action="@{/}" method="get" class="row g-3">
+                        <div class="col-md-9">
+                            <input type="text" name="search" class="form-control form-control-lg" placeholder="Search for tractors, harvesters..." th:value="${search}">
+                        </div>
+                        <div class="col-md-3 d-grid">
+                            <button type="submit" class="btn btn-green btn-lg">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Equipment List -->
+    <div class="container mt-5" id="browse">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="fw-bold"><span class="text-success">Explore</span> Equipment</h2>
+                <p class="text-muted" th:text="${equipments.size()} + ' premium items available matches your requirements'"></p>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="item : ${equipments}">
+                <div class="card equipment-card">
+                    <div class="card-img-container">
+                        <img th:src="${item.imageUrl}" class="card-img-top" th:alt="${item.name}">
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title fw-bold mb-0" th:text="${item.name}">Equipment Name</h5>
+                            <span th:if="${item.availability}" class="badge badge-available">Available</span>
+                            <span th:unless="${item.availability}" class="badge badge-rented">Rented</span>
+                        </div>
+                        <p class="text-muted small mb-3" th:text="${item.type}">Tractor</p>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="price-tag">
+                                ₹<span th:text="${item.pricePerDay}" class="item-price">1500</span><small class="text-muted fw-normal" style="font-size: 0.8rem;">/day</small>
+                            </div>
+                        </div>
+                        <div th:if="${item.availability}">
+                            <form th:action="@{/rent}" method="post">
+                                <input type="hidden" name="id" th:value="${item.id}">
+                                <div class="mb-2">
+                                    <label class="form-label small">From Date:</label>
+                                    <input type="date" name="fromDate" class="form-control from-date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small">To Date:</label>
+                                    <input type="date" name="toDate" class="form-control to-date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-success">Total: ₹<span class="total-cost">0</span></strong>
+                                </div>
+                                <button type="submit" class="btn btn-green w-100">Book Now</button>
+                            </form>
+                        </div>
+                        <button th:unless="${item.availability}" class="btn btn-secondary w-100 disabled" disabled>Rented Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto" id="footer">
+        <div class="container text-center">
+            <p class="mb-2 fw-bold">© 2026 AgriRental Systems Pvt. Ltd.</p>
+            <p class="mb-0 small text-light-50">Empowering farmers with world-class machinery.</p>
+            <div class="mt-3">
+                <a href="#" class="text-white mx-2">Privacy Policy</a>
+                <a href="#" class="text-white mx-2">Terms of Service</a>
+                <a href="#" class="text-white mx-2">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const cardBody = this.closest('.card-body');
+                const fromDateInput = cardBody.querySelector('.from-date');
+                const toDateInput = cardBody.querySelector('.to-date');
+                const priceSpan = cardBody.querySelector('.item-price');
+                const totalCostSpan = cardBody.querySelector('.total-cost');
+                
+                if (fromDateInput.value && toDateInput.value) {
+                    const fromDate = new Date(fromDateInput.value);
+                    const toDate = new Date(toDateInput.value);
+                    
+                    if (fromDate >= toDate) {
+                        alert("To Date must be after From Date");
+                        toDateInput.value = '';
+                        totalCostSpan.textContent = '0';
+                        return;
+                    }
+                    
+                    const diffTime = Math.abs(toDate - fromDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const pricePerDay = parseFloat(priceSpan.textContent);
+                    const totalCost = diffDays * pricePerDay;
+
+                    totalCostSpan.textContent = totalCost.toFixed(2);
+                }
+            });
+
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            input.setAttribute('min', today);
+        });
+    </script>
+</body>
+</html>
